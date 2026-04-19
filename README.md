@@ -199,16 +199,6 @@ python scripts\eval_latency.py   # end-to-end latency
 
 ## Known Limitations and Planned Improvements
 
-### Intent classifier accuracy — in progress
-
-Current accuracy is 0.64. The root cause is insufficient training data — approximately
-25 examples per intent. Target is 40-60 examples per intent.
-
-Planned fix:
-- Expand `data/raw/intents.csv` using the Bitext customer support dataset
-- Retrain with `distilbert-base-uncased` for better small-dataset performance
-- Add weighted loss for class imbalance
-
 ### Audio format support — planned
 
 Currently only WAV is supported. Planned additions:
