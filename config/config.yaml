@@ -1,0 +1,41 @@
+app:
+  name: "VoiceBot"
+  version: "0.1.0"
+  debug: false
+
+server:
+  host: "127.0.0.1"
+  port: 8000
+  reload: true
+
+asr:
+  model_name: "base"
+  device: "cpu"
+  language: "en"
+
+response:
+  strategy: "mapping"
+  fallback_message: "I'm sorry, I didn't understand that. Could you rephrase?"
+
+tts:
+  engine: "gtts"
+  language: "en"
+  slow: false
+
+asr:
+  model_name: "base"
+  device: "cpu"
+  language: "en"
+
+intent:
+  model_path: "models/intent_classifier"
+  confidence_threshold: 0.3
+
+cache:
+  huggingface: "D:/AI_Caches/huggingface"
+  whisper: "D:/AI_Caches/whisper"
+  torch: "D:/AI_Caches/torch"
+
+tts:
+  language: "en"
+  slow: false

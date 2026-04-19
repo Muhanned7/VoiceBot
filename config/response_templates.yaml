@@ -1,0 +1,47 @@
+order_status:
+  - "Your order is currently being processed and will ship within 2 business days."
+  - "I can see your order is on its way. You should receive a tracking email shortly."
+
+order_cancellation:
+  - "I can help you cancel your order. Cancellations are only possible within 24 hours of placing the order."
+  - "To cancel your order please visit My Orders on our website or I can escalate this to our support team."
+
+refund_request:
+  - "Refunds are typically processed within 5 to 7 business days to your original payment method."
+  - "I have noted your refund request. Our team will review it and get back to you within 48 hours."
+
+subscription_issue:
+  - "I can help you with your subscription. Would you like to upgrade, downgrade, or cancel?"
+  - "Your subscription status looks active. If you are experiencing billing issues I can connect you to billing support."
+
+password_reset:
+  - "To reset your password click on Forgot Password on the login page. You will receive an email within a few minutes."
+  - "A password reset link has been sent to your registered email address."
+
+shipping_query:
+  - "Standard shipping takes 3 to 5 business days. Express shipping is available for an additional fee."
+  - "We ship to over 50 countries. Delivery times vary by destination."
+
+product_inquiry:
+  - "I would be happy to help with product information. Could you share the product name or ID?"
+  - "You can find detailed product specifications on our website under the product listing."
+
+account_issue:
+  - "I can help you with your account. Are you having trouble logging in or is it a different issue?"
+  - "Your account is active. If you need to update your details please visit Account Settings."
+
+payment_issue:
+  - "I am sorry you are experiencing a payment issue. Please ensure your card details are up to date and try again."
+  - "If your payment failed your order has not been placed. Please retry or use an alternative payment method."
+
+return_request:
+  - "Returns are accepted within 30 days of purchase. Please ensure the product is in its original condition."
+  - "To initiate a return please visit our Returns Centre on the website."
+
+complaint:
+  - "I am sorry to hear that. Your feedback is important to us and I am escalating this to our customer care team."
+  - "I apologize for the inconvenience. Let me make sure this is resolved for you as quickly as possible."
+
+general_inquiry:
+  - "I am here to help. Could you please provide more details about your query?"
+  - "Thank you for reaching out. Could you share more information so I can assist you better?"

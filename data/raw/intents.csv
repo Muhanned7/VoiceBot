@@ -1,0 +1,251 @@
+text,intent
+where is my order,order_status
+what is the status of my order,order_status
+can you tell me where my package is,order_status
+I haven't received my order yet,order_status
+my order hasn't arrived,order_status
+track my order,order_status
+when will my order be delivered,order_status
+has my order shipped yet,order_status
+I want to know my order status,order_status
+where is my package,order_status
+my delivery is late,order_status
+I ordered something and haven't heard back,order_status
+what happened to my order,order_status
+can I get an update on my order,order_status
+is my order on the way,order_status
+I want to cancel my order,order_cancellation
+please cancel my order,order_cancellation
+how do I cancel my order,order_cancellation
+I need to cancel my purchase,order_cancellation
+can I cancel my order,order_cancellation
+I changed my mind and want to cancel,order_cancellation
+cancel my recent order,order_cancellation
+I want to stop my order,order_cancellation
+is it possible to cancel my order,order_cancellation
+I no longer want this order,order_cancellation
+I want a refund,refund_request
+how do I get a refund,refund_request
+I need my money back,refund_request
+can I get a refund,refund_request
+I want to request a refund,refund_request
+process my refund please,refund_request
+I was charged incorrectly and want a refund,refund_request
+refund my order,refund_request
+I am not happy and want a refund,refund_request
+how long does a refund take,refund_request
+I have an issue with my subscription,subscription_issue
+my subscription is not working,subscription_issue
+I can't access my subscription,subscription_issue
+how do I cancel my subscription,subscription_issue
+I was charged for a subscription I cancelled,subscription_issue
+my subscription renewed unexpectedly,subscription_issue
+I want to upgrade my subscription,subscription_issue
+I want to downgrade my plan,subscription_issue
+subscription billing issue,subscription_issue
+I need help with my subscription,subscription_issue
+I forgot my password,password_reset
+how do I reset my password,password_reset
+I can't log in to my account,password_reset
+reset my password please,password_reset
+I need a new password,password_reset
+my password is not working,password_reset
+how do I change my password,password_reset
+I am locked out of my account,password_reset
+send me a password reset link,password_reset
+I lost access to my account,password_reset
+how long does shipping take,shipping_query
+what are your shipping options,shipping_query
+do you offer express shipping,shipping_query
+how much does shipping cost,shipping_query
+do you ship internationally,shipping_query
+what countries do you ship to,shipping_query
+when will my order ship,shipping_query
+what is your delivery time,shipping_query
+can I change my shipping address,shipping_query
+do you offer free shipping,shipping_query
+tell me about this product,product_inquiry
+what are the features of this product,product_inquiry
+is this product available,product_inquiry
+what colors does this come in,product_inquiry
+can you give me more details about this item,product_inquiry
+what is the warranty on this product,product_inquiry
+is this compatible with my device,product_inquiry
+what is the return policy for this product,product_inquiry
+how do I use this product,product_inquiry
+what is the difference between these two products,product_inquiry
+I have an issue with my account,account_issue
+my account is not working,account_issue
+I can't access my account,account_issue
+how do I delete my account,account_issue
+I want to update my account details,account_issue
+my account has been hacked,account_issue
+I need help with my account,account_issue
+how do I change my email address,account_issue
+my account is showing wrong information,account_issue
+I want to close my account,account_issue
+my payment failed,payment_issue
+I was charged twice,payment_issue
+my credit card is not working,payment_issue
+I need help with a payment,payment_issue
+why was I charged this amount,payment_issue
+my payment is not going through,payment_issue
+I want to update my payment method,payment_issue
+there is an unauthorized charge on my account,payment_issue
+I need a receipt for my payment,payment_issue
+how do I pay with a different card,payment_issue
+I want to return a product,return_request
+how do I return an item,return_request
+can I return this product,return_request
+I received the wrong item and want to return it,return_request
+how long do I have to return a product,return_request
+what is your return policy,return_request
+I need to send something back,return_request
+how do I initiate a return,return_request
+I want to exchange this item,return_request
+my item arrived damaged and I want to return it,return_request
+I want to make a complaint,complaint
+I am very unhappy with your service,complaint
+this is unacceptable,complaint
+I want to speak to a manager,complaint
+your service is terrible,complaint
+I am extremely disappointed,complaint
+I had a very bad experience,complaint
+this is not what I expected,complaint
+I am filing a formal complaint,complaint
+I want to report a problem,complaint
+I need some help,general_inquiry
+can you help me,general_inquiry
+I have a question,general_inquiry
+what can you help me with,general_inquiry
+I need assistance,general_inquiry
+hello I need help,general_inquiry
+what services do you offer,general_inquiry
+how does this work,general_inquiry
+I am not sure what I need,general_inquiry
+can I speak to someone,general_inquiry
+where is my order,order_status
+has my package shipped yet,order_status
+any update on my delivery,order_status
+I have not received my order,order_status
+when will my parcel arrive,order_status
+my tracking number is not updating,order_status
+still waiting on my purchase,order_status
+is my order on its way,order_status
+did my order go through,order_status
+can you check on my delivery,order_status
+my package is late,order_status
+I ordered three days ago and nothing,order_status
+how do I track my shipment,order_status
+where can I find my order number,order_status
+I need an update on my purchase,order_status
+stop my order,order_cancellation
+I want to call off my order,order_cancellation
+is it too late to cancel,order_cancellation
+how do I stop a delivery,order_cancellation
+I accidentally placed an order,order_cancellation
+I ordered the wrong item please cancel,order_cancellation
+can you cancel order number 1234,order_cancellation
+I do not want this anymore,order_cancellation
+please stop my shipment,order_cancellation
+I need to cancel before it ships,order_cancellation
+I was charged wrongly and want money back,refund_request
+I want to dispute this charge,refund_request
+can I get my money back,refund_request
+I need a full refund,refund_request
+the product was damaged I want a refund,refund_request
+this item is not as described refund please,refund_request
+I returned the item where is my refund,refund_request
+how do I claim a refund,refund_request
+refund not received yet,refund_request
+I am entitled to a refund,refund_request
+I cannot access my premium account,subscription_issue
+my trial ended but I was still charged,subscription_issue
+how do I pause my subscription,subscription_issue
+I want to switch to a different plan,subscription_issue
+my subscription is showing as expired,subscription_issue
+I did not authorize this subscription renewal,subscription_issue
+how do I manage my subscription,subscription_issue
+I want to remove my subscription,subscription_issue
+subscription payment keeps failing,subscription_issue
+I need to update my subscription details,subscription_issue
+I cannot remember my password,password_reset
+my account is locked,password_reset
+how do I get back into my account,password_reset
+the reset email never arrived,password_reset
+I need to create a new password,password_reset
+my password expired,password_reset
+I want to change my login details,password_reset
+the forgot password link is not working,password_reset
+I keep getting invalid password error,password_reset
+reset link says it has expired,password_reset
+how fast is your delivery,shipping_query
+do you deliver on weekends,shipping_query
+can I pick up my order in store,shipping_query
+what courier do you use,shipping_query
+my address was wrong on the order,shipping_query
+can I change my delivery address,shipping_query
+do you offer next day delivery,shipping_query
+what happens if I miss the delivery,shipping_query
+is there tracking on all orders,shipping_query
+how do I change my shipping method,shipping_query
+I want to know more about this item,product_inquiry
+does this product come with a warranty,product_inquiry
+what are the dimensions of this product,product_inquiry
+is this item in stock,product_inquiry
+what materials is this made of,product_inquiry
+can I see more photos of this product,product_inquiry
+does this work with my existing setup,product_inquiry
+what is the difference between model A and B,product_inquiry
+is this product discontinued,product_inquiry
+where is this product manufactured,product_inquiry
+I cannot log into my account,account_issue
+my email address has changed,account_issue
+how do I merge two accounts,account_issue
+my account shows incorrect order history,account_issue
+someone else accessed my account,account_issue
+I want to change my username,account_issue
+how do I update my billing address,account_issue
+my account is showing the wrong name,account_issue
+I need to verify my account,account_issue
+how do I add a secondary email,account_issue
+I see a charge I do not recognize,payment_issue
+my bank declined the transaction,payment_issue
+can I pay in installments,payment_issue
+my coupon code is not working,payment_issue
+I was charged in the wrong currency,payment_issue
+how do I get a receipt,payment_issue
+my card expired how do I update it,payment_issue
+I want to pay with PayPal,payment_issue
+the checkout is not accepting my card,payment_issue
+I need to split payment between two cards,payment_issue
+how do I send something back,return_request
+the item arrived broken I want to return it,return_request
+I received the wrong size,return_request
+can I return a gift,return_request
+I changed my mind after delivery,return_request
+the return label is not working,return_request
+I sent the item back but no refund yet,return_request
+how long does a return take to process,return_request
+can I return without the original packaging,return_request
+I need a prepaid return label,return_request
+I am very frustrated with your service,complaint
+nobody has responded to my emails,complaint
+this is the second time this has happened,complaint
+I have been waiting weeks for a resolution,complaint
+your customer service is unacceptable,complaint
+I want to escalate this issue,complaint
+I am going to leave a negative review,complaint
+this is not good enough,complaint
+I deserve compensation for this experience,complaint
+I want a formal apology,complaint
+what are your business hours,general_inquiry
+do you have a physical store,general_inquiry
+how do I contact customer support,general_inquiry
+can I speak to a human agent,general_inquiry
+what is your phone number,general_inquiry
+do you have a live chat option,general_inquiry
+how long have you been in business,general_inquiry
+do you offer student discounts,general_inquiry
+what payment methods do you accept,general_inquiry
+are you available on weekends,general_inquiry
