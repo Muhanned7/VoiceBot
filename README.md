@@ -8,10 +8,10 @@ speech output — all accessible through a React web interface.
 ---
 
 ### Screenshots
-![Character 1](docs\screenshots\character1scrnsht.png)
-![Character 2](docs\screenshots\character2scrnsht.png)
-![Character 3](docs\screenshots\character3scrnsht.png)
-![Mic record](docs\screenshots\mic.png)
+![Character 1](docs/screenshots/character1scrnsht.png)
+![Character 2](docs/screenshots/character2scrnsht.png)
+![Character 3](docs/screenshots/character3scrnsht.png)
+![Mic record](docs/screenshots/mic.png)
 
 ## System Architecture
 Audio Input (WAV / WebM / OGG)
