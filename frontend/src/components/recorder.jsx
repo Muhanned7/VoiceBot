@@ -40,16 +40,29 @@ function Recorder({ onAudioReady, onRecordingStart }) {
         }
       }
 
-      mediaRecorder.onstop = () => {
+      mediaRecorder.onstop = async () => {
         const mimeType = mimeTypeRef.current || "audio/webm"
         const extension = getExtension(mimeType)
-        const audioBlob = new Blob(chunksRef.current, { type: mimeType })
-        audioBlob.filename = `recording.${extension}`
+      
+        await new Promise(resolve => setTimeout(resolve, 100))
+      
+        // Use only the base mime type for the Blob, not the full codec string
+        const baseMimeType = mimeType.split(";")[0]  // "audio/webm" not "audio/webm;codecs=opus"
+        
+        const audioBlob = new Blob(chunksRef.current, { type: baseMimeType })
+      
+        console.log("Blob size:", audioBlob.size, "type:", audioBlob.type)
+      
+        if (audioBlob.size < 1000) {
+          console.warn("Recording too small, discarding:", audioBlob.size, "bytes")
+          return
+        }
+      
         stream.getTracks().forEach(track => track.stop())
         onAudioReady(audioBlob, `recording.${extension}`)
       }
 
-      mediaRecorder.start()
+      mediaRecorder.start(250)
       setIsRecording(true)
       onRecordingStart()
 

@@ -23,24 +23,38 @@ def detect_format(file_bytes: bytes) -> str:
         return "mp3"
     # default to webm for browser recordings
     return "webm"
-
+PROJECT_ROOT = os.path.dirname(  # voicebot/
+    os.path.dirname(              # core/
+        os.path.dirname(          # asr/
+            os.path.abspath(__file__)  # audio_utils.py
+        )
+    )
+)
+PROCESSED_DIR = os.path.normpath(os.path.join(PROJECT_ROOT, "data", "processed"))
+PROCESSED_DIR = os.path.normpath(PROCESSED_DIR)
 def convert_to_wav(input_bytes: bytes, input_format: str) -> bytes:
-    input_path = f"data/processed/tmp_in_{uuid.uuid4().hex}.{input_format}"
-    output_path = f"data/processed/tmp_out_{uuid.uuid4().hex}.wav"
+    input_path = os.path.join(PROCESSED_DIR, f"tmp_in_{uuid.uuid4().hex}.{input_format}")
+    output_path = os.path.join(PROCESSED_DIR, f"tmp_out_{uuid.uuid4().hex}.wav")
+
 
     with open(input_path, "wb") as f:
         f.write(input_bytes)
 
     try:
-        subprocess.run([
+        result = subprocess.run([
             "ffmpeg", "-y",
             "-i", input_path,
             "-ar", "16000",
             "-ac", "1",
             "-f", "wav",
             output_path
-        ], check=True, capture_output=True)
-
+        ], text=True, capture_output=True)
+        # Log EVERYTHING
+        logger.error(f"ffmpeg returncode: {result.returncode}")
+        logger.error(f"ffmpeg stderr: {result.stderr}")
+        logger.error(f"ffmpeg stdout: {result.stdout}")
+        logger.error(f"input file exists: {os.path.exists(input_path)}")
+        logger.error(f"input file size: {os.path.getsize(input_path)}")
         with open(output_path, "rb") as f:
             wav_bytes = f.read()
 

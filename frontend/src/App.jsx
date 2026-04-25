@@ -1,93 +1,83 @@
-import { useState } from "react"
-import Recorder from './components/recorder'
-import Uploader from "./components/Uploader"
+import { useState, useRef } from "react"
+import Character from "./components/Character"
+import CharacterPicker from "./components/CharacterPicker"
+import MicButton from "./components/MicButton"
 import ResultCard from "./components/ResultCard"
-import AudioPlayer from "./components/AudioPlayer"
-function App(){
+
+function App() {
+  const [selectedChar, setSelectedChar] = useState("maya")
   const [status, setStatus] = useState("idle")
   const [transcript, setTranscript] = useState("")
   const [intent, setIntent] = useState("")
   const [confidence, setConfidence] = useState(0)
   const [response, setResponse] = useState("")
-  const [audioUrl, setAudioUrl] = useState(null)
-  const [errorMessage, setErrorMessage] = useState("")
+  const [isSpeaking, setIsSpeaking] = useState(false)
+  const audioRef = useRef(null)
 
-  const handleAudioReady = async (audioBlob) =>{
-    setStatus("processing")
-
+  const handleAudioReady = async (blob, filename) => {
+    const formData = new FormData()
+    
+    // Explicitly set the correct mime type and filename
+    const file = new File([blob], filename, { type: blob.type })
+    formData.append("file", file, filename)  // filename must have correct extension
+  
+    console.log("Sending:", filename, "size:", blob.size, "type:", blob.type)
+  
     try {
-      const formData1 = new FormData()
-      formData1.append("file", audioBlob, "recording.wav")
-
-      const VoiceBotRes = await fetch("/voicebot", {
+      const res = await fetch("http://localhost:8000/voicebot", {
         method: "POST",
-        body: formData1
+        body: formData,
       })
 
-      if (!VoiceBotRes.ok){
-        const err = await VoiceBotRes.json()
-        throw new Error(err.error || "Voicebot request failed")
+      if (!res.ok) {
+        setStatus("error")
+        return
       }
 
-      const audioBlobOut = await VoiceBotRes.blob()
-      const url = URL.createObjectURL(audioBlobOut)
-      setAudioUrl(url)
+      const data = await res.json()
+      console.log("Response:", data)
 
-      // Step 2 — send to /asr/transcribe to get text for display
-      const formData2 = new FormData()
-      formData2.append("file", audioBlob, "recording.wav")
+      // Update state with response data
+      setTranscript(data.transcript)
+      setIntent(data.intent)
+      setConfidence(data.confidence)
+      setResponse(data.response)
+      setStatus("done")
 
-      const asrRes = await fetch("/asr/transcribe", {
-        method: "POST",
-        body: formData2
-      })
+      // Play audio and animate character mouth
+      if (data.audio) {
+        const audioBytes = Uint8Array.from(atob(data.audio), c => c.charCodeAt(0))
+        const audioBlob = new Blob([audioBytes], { type: "audio/mpeg" })
+        const audioUrl = URL.createObjectURL(audioBlob)
 
-      if (!asrRes.ok) throw new Error("Transcription failed")
-        const asrData = await asrRes.json()
-        setTranscript(asrData.text)
+        const audio = audioRef.current
+        audio.src = audioUrl
+        audio.onplay = () => setIsSpeaking(true)
+        audio.onended = () => {
+          setIsSpeaking(false)
+          URL.revokeObjectURL(audioUrl) // clean up
+        }
+        audio.play()
+      } else {
+        console.warn("No audio in response")
+      }
 
-      // Step 3 — get intent
-      const intentRes = await fetch("/intent/predict", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: asrData.text })
-      })
-      
-      if (!intentRes.ok) throw new Error("Intent prediction failed")
-        const intentData = await intentRes.json()
-        setIntent(intentData.intent)
-        setConfidence(intentData.confidence)
-
-      // Step 4 — get response text
-      const responseRes = await fetch("/response/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ intent: intentData.intent })
-      })
-
-      
-
-      if (!responseRes.ok) throw new Error("Response generation failed")
-        const responseData = await responseRes.json()
-        setResponse(responseData.response)
-
-        setStatus("done")
-        
-    } catch(err){
-      console.error("Pipeline error:", err)
-      setErrorMessage(err.message)
+    } catch (err) {
+      console.error("Request failed:", err)
       setStatus("error")
     }
   }
-  const resetState = () => {
-    setStatus("idle")
-    setTranscript("")
-    setIntent("")
-    setConfidence(0)
-    setResponse("")
-    setAudioUrl(null)
-    setErrorMessage("")      
+
+  const handleSelectChar = (id) => {
+    // stop audio if playing when switching character
+    if (audioRef.current) {
+      audioRef.current.pause()
+      audioRef.current.src = ""
+    }
+    setIsSpeaking(false)
+    setSelectedChar(id)
   }
+
   return (
     <div className="app">
       <header className="app-header">
@@ -95,61 +85,68 @@ function App(){
         <p>AI-powered customer support</p>
       </header>
 
-      <main className="app-main">
-        {status === "idle" && (
-          <div className="input-section">
-            <Recorder onAudioReady={handleAudioReady}
-            onRecordingStart = {() => setStatus("recording")}
-            />
-           <div className="divider">or</div>
-            <Uploader onAudioReady={handleAudioReady} />
-          </div>
-        )}
+      <main className="app-main-new">
 
-        {status === "recording" && (
-          <div className="input-selection">
-            <Recorder 
-              onAudioReady={handleAudioReady}
-              onRecordingStart={() => setStatus("recording")}
-              autoStarted ={true}
-              />
-          </div>
-        )}
+        {/* Character picker */}
+        <CharacterPicker
+          selected={selectedChar}
+          onSelect={handleSelectChar}
+        />
 
-{status === "processing" && (
-          <div className="processing-section">
-            <div className="spinner" />
-            <p>Processing your request...</p>
-          </div>
-        )}
+        {/* Character display */}
+        <div className="character-stage">
+          <audio ref={audioRef} />
+          <Character
+            characterId={selectedChar}
+            isSpeaking={isSpeaking}
+            audioRef={audioRef}
+          />
+        </div>
 
+        {/* Response text — shows below character */}
         {status === "done" && (
-          <div className="result-section">
-            <ResultCard
-              transcript={transcript}
-              intent={intent}
-              confidence={confidence}
-              response={response}
-            />
-            <AudioPlayer audioUrl={audioUrl} />
-            <button className="reset-btn" onClick={resetState}>
-              Ask another question
-            </button>
+          <div className="response-bubble">
+            <p className="response-text">"{response}"</p>
           </div>
         )}
 
-        {status === "error" && (
-          <div className="error-section">
-            <p className="error-message">{errorMessage}</p>
-            <button className="reset-btn" onClick={resetState}>
-              Try again
-            </button>
+        {/* Processing indicator */}
+        {status === "processing" && (
+          <div className="response-bubble processing">
+            <div className="typing-dots">
+              <span /><span /><span />
+            </div>
           </div>
         )}
+
+        {/* Error */}
+        {status === "error" && (
+          <div className="response-bubble error">
+            <p className="response-text">
+              Something went wrong. Please try again.
+            </p>
+          </div>
+        )}
+
+        {/* Result details */}
+        {/*{status === "done" && (
+          <ResultCard
+            transcript={transcript}
+            intent={intent}
+            confidence={confidence}
+            response=""
+          />
+        )} */}
+
+        {/* Mic button — always at bottom */}
+        <MicButton
+          onAudioReady={handleAudioReady}
+          disabled={status === "processing"}
+        />
+
       </main>
-    </div>  
+    </div>
   )
-  
 }
 
 export default App

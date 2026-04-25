@@ -5,6 +5,7 @@ from core.asr.transcriber import Transcriber
 from core.intent.classifier import IntentClassifier
 from core.response.generator import ResponseGenerator
 from core.tts.synthesizer import Synthesizer
+import base64
 from core.models import transcriber, classifier, generator, synthesizer
 from utils.exceptions import (
     UnsupportedAudioFormat,
@@ -15,6 +16,8 @@ from utils.exceptions import (
 )
 from utils.config_loader import load_settings
 from utils.logger import get_logger
+
+
 
 logger = get_logger(__name__)
 cfg = load_settings()
@@ -66,12 +69,17 @@ async def voicebot(file: UploadFile = File(...)):
 
         # Step 4 — TTS
         audio_out = synthesizer.synthesize(response_text)
+        print(type(audio_out))  # Add this temporarily
+        print(len(audio_out))
         logger.info("Voicebot pipeline complete")
 
-        return Response(
-            content=audio_out,
-            media_type="audio/mpeg"
-        )
+        return JSONResponse(content={
+        "transcript": text,
+        "intent": intent,
+        "confidence": confidence,
+        "response": response_text,
+        "audio": audio_b64
+        })
 
     except UnsupportedAudioFormat as e:
         logger.warning(f"Bad format: {e.message}")
@@ -89,7 +97,16 @@ async def voicebot(file: UploadFile = File(...)):
         logger.warning(f"Low confidence, using fallback response")
         response_text = generator.generate("general_inquiry")
         audio_out = synthesizer.synthesize(response_text)
-        return Response(content=audio_out, media_type="audio/mpeg")
+        print(type(audio_out))  # Add this temporarily
+        print(len(audio_out))
+        audio_b64 = base64.b64encode(audio_out).decode("utf-8")
+        return JSONResponse(content={
+            "transcript": "",
+            "intent": "general_inquiry",
+            "confidence": 0.0,
+            "response": response_text,
+            "audio": audio_b64
+        })
 
     except ModelNotLoaded as e:
         logger.error(f"Model not loaded: {e.message}")

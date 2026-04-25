@@ -8,8 +8,10 @@ from api.asr_router import router as asr_router
 from api.intent_router import router as intent_router
 from api.response_router import router as response_router
 from api.tts_router import router as tts_router
+from fastapi.middleware.cors import CORSMiddleware
 from api.voicebot_router import router as voicebot_router
 from core.models import load_all_models
+
 import os
 
 cfg = load_settings()
@@ -25,6 +27,14 @@ app = FastAPI(
     title=cfg.app.name,
     version=cfg.app.version,
     description="AI-powered voice bot for customer support"
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],  # your Vite dev server
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 app.include_router(asr_router, prefix="/asr", tags=["ASR"])
