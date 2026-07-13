@@ -8,21 +8,29 @@ function App() {
   const [selectedChar, setSelectedChar] = useState("maya")
   const [status, setStatus] = useState("idle")
   const [transcript, setTranscript] = useState("")
-  const [intent, setIntent] = useState("")
-  const [confidence, setConfidence] = useState(0)
   const [response, setResponse] = useState("")
   const [isSpeaking, setIsSpeaking] = useState(false)
   const audioRef = useRef(null)
 
+  // Stable per-conversation ID. Generated once when the app first loads and
+  // kept for the lifetime of this session — every /voicebot request reuses
+  // it so the LangGraph agent's MemorySaver can retrieve prior turns. If you
+  // ever add a "start new conversation" button, generate a fresh UUID there
+  // to reset the agent's memory for that session.
+  const sessionIdRef = useRef(crypto.randomUUID())
+
   const handleAudioReady = async (blob, filename) => {
     const formData = new FormData()
-    
+
     // Explicitly set the correct mime type and filename
     const file = new File([blob], filename, { type: blob.type })
     formData.append("file", file, filename)  // filename must have correct extension
-  
-    console.log("Sending:", filename, "size:", blob.size, "type:", blob.type)
-  
+    formData.append("session_id", sessionIdRef.current)
+
+    console.log("Sending:", filename, "size:", blob.size, "type:", blob.type, "session:", sessionIdRef.current)
+
+    setStatus("processing")
+
     try {
       const res = await fetch("http://localhost:8000/voicebot", {
         method: "POST",
@@ -39,8 +47,6 @@ function App() {
 
       // Update state with response data
       setTranscript(data.transcript)
-      setIntent(data.intent)
-      setConfidence(data.confidence)
       setResponse(data.response)
       setStatus("done")
 
@@ -132,8 +138,6 @@ function App() {
         {/*{status === "done" && (
           <ResultCard
             transcript={transcript}
-            intent={intent}
-            confidence={confidence}
             response=""
           />
         )} */}

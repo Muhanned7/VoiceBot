@@ -1,53 +1,47 @@
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter, UploadFile, File, Form
 from fastapi.responses import JSONResponse, Response
 from core.asr.audio_utils import prepare_audio
 from core.asr.transcriber import Transcriber
-from core.intent.classifier import IntentClassifier
-from core.response.generator import ResponseGenerator
 from core.tts.synthesizer import Synthesizer
 import base64
-from core.models import transcriber, classifier, generator, synthesizer
+from core.models import transcriber, synthesizer
+from core.agent.agent import build_agent, run_turn
+from core.agent.database import init_db
 from utils.exceptions import (
     UnsupportedAudioFormat,
     AudioTooShort,
     TranscriptionEmpty,
-    LowConfidenceIntent,
     ModelNotLoaded
 )
 from utils.config_loader import load_settings
 from utils.logger import get_logger
 
 
-
 logger = get_logger(__name__)
 cfg = load_settings()
 
 router = APIRouter()
-'''
-transcriber = Transcriber(
-    model_name=cfg.asr.model_name,
-    device=cfg.asr.device
-)
 
-classifier = IntentClassifier(
-    model_path=cfg.intent.model_path
-)
+# Built once at import time, reused across requests. MemorySaver keeps each
+# session's conversation history in-process, keyed by session_id.
+init_db()
+voice_agent = build_agent()
 
-generator = ResponseGenerator()
-synthesizer = Synthesizer(
-    language=cfg.tts.language,
-    slow=cfg.tts.slow
-)
-'''
 
 def load_all():
     transcriber.load()
-    classifier.load()
-    generator.load()
-    
+
+
 @router.post("/voicebot")
-async def voicebot(file: UploadFile = File(...)):
-    logger.info(f"Voicebot request received: {file.filename}")
+async def voicebot(file: UploadFile = File(...), session_id: str = Form(...)):
+    """
+    session_id: stable ID for the current conversation, generated once by
+    the frontend when a call/chat session starts and re-sent on every turn
+    of that same session. This is what gives the agent multi-turn memory —
+    without it (or if it changes every request) the agent has no memory of
+    earlier turns.
+    """
+    logger.info(f"Voicebot request received: {file.filename} (session={session_id})")
 
     try:
         # Step 1 — ASR
@@ -57,28 +51,21 @@ async def voicebot(file: UploadFile = File(...)):
         text = transcript["text"]
         logger.info(f"Transcript: '{text}'")
 
-        # Step 2 — Intent
-        intent_result = classifier.predict(text)
-        intent = intent_result["intent"]
-        confidence = intent_result["confidence"]
-        logger.info(f"Intent: {intent} ({confidence})")
+        # Step 2 — Agent (replaces intent classification + fixed response
+        # generation). The agent decides on its own whether to just reply,
+        # or call check_order_status / check_account / process_refund.
+        response_text = run_turn(voice_agent, text, thread_id=session_id)
+        logger.info(f"Agent response: '{response_text[:50]}'")
 
-        # Step 3 — Response
-        response_text = generator.generate(intent)
-        logger.info(f"Response: '{response_text[:50]}'")
-
-        # Step 4 — TTS
+        # Step 3 — TTS
         audio_out = synthesizer.synthesize(response_text)
-        print(type(audio_out))  # Add this temporarily
-        print(len(audio_out))
+        audio_b64 = base64.b64encode(audio_out).decode("utf-8")
         logger.info("Voicebot pipeline complete")
 
         return JSONResponse(content={
-        "transcript": text,
-        "intent": intent,
-        "confidence": confidence,
-        "response": response_text,
-        "audio": audio_b64
+            "transcript": text,
+            "response": response_text,
+            "audio": audio_b64
         })
 
     except UnsupportedAudioFormat as e:
@@ -93,21 +80,6 @@ async def voicebot(file: UploadFile = File(...)):
         logger.warning(f"Empty transcript: {e.message}")
         return JSONResponse(status_code=422, content={"error": e.message})
 
-    except LowConfidenceIntent as e:
-        logger.warning(f"Low confidence, using fallback response")
-        response_text = generator.generate("general_inquiry")
-        audio_out = synthesizer.synthesize(response_text)
-        print(type(audio_out))  # Add this temporarily
-        print(len(audio_out))
-        audio_b64 = base64.b64encode(audio_out).decode("utf-8")
-        return JSONResponse(content={
-            "transcript": "",
-            "intent": "general_inquiry",
-            "confidence": 0.0,
-            "response": response_text,
-            "audio": audio_b64
-        })
-
     except ModelNotLoaded as e:
         logger.error(f"Model not loaded: {e.message}")
         return JSONResponse(status_code=503, content={"error": e.message})
@@ -115,6 +87,3 @@ async def voicebot(file: UploadFile = File(...)):
     except Exception as e:
         logger.error(f"Unexpected error: {str(e)}")
         return JSONResponse(status_code=500, content={"error": "Something went wrong."})
-
-
-
